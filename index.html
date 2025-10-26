@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evento Online - Harvey Sarmiento</title>
+    <meta name="description" content="Evento Online Exclusivo - Harvey Sarmiento. Resultados garantizados. Gran Premio: 2 Meses de Acompañamiento + $500,000 COP">
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    }
+    #root {
+        min-height: 100vh;
+    }
+</style>
+
+
+</head>
+<body>
+    <div id="root"></div>
+
+
+<script type="text/babel">
+    const { useState, useEffect } = React;
+    const { Gift, Zap, TrendingUp, Award, DollarSign, Users, Send } = lucide;
+
+    function EventoOnline() {
+        const [eventActive, setEventActive] = useState(true);
+        const [progress, setProgress] = useState(5);
+        const [surpriseNumbers, setSurpriseNumbers] = useState([]);
+        const [showAdmin, setShowAdmin] = useState(false);
+        const [isAuthenticated, setIsAuthenticated] = useState(false);
+        const [passwordInput, setPasswordInput] = useState('');
+        const [showPasswordError, setShowPasswordError] = useState(false);
+
+        const ADMIN_PASSWORD = '123510201819';
+        const paymentLink = 'https://checkout.bold.co/payment/LNK_ZNBQIFJLGN';
+        const whatsappNumber = '573015619137';
+        const whatsappMessage = encodeURIComponent('¡Hola Harvey! Ya realicé el pago de los 10 stickers. Te envío el comprobante 📸');
+
+        useEffect(() => {
+            if (eventActive && surpriseNumbers.length === 0) {
+                generateSurpriseNumbers();
+            }
+        }, [eventActive]);
+
+        useEffect(() => {
+            if (!eventActive) return;
+            const progressSteps = [5, 10, 20, 35, 50, 65, 75, 85, 90, 95];
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep < progressSteps.length) {
+                    setProgress(progressSteps[currentStep]);
+                    currentStep++;
+                }
+            }, 45000);
+            return () => clearInterval(interval);
+        }, [eventActive]);
+
+        const generateSurpriseNumbers = () => {
+            const numbers = new Set();
+            while (numbers.size < 10) {
+                numbers.add(Math.floor(1000 + Math.random() * 9000));
+            }
+            setSurpriseNumbers(Array.from(numbers).sort((a, b) => a - b));
+        };
+
+        const startNewEvent = () => {
+            setEventActive(true);
+            setProgress(5);
+            generateSurpriseNumbers();
+            setShowAdmin(false);
+            setIsAuthenticated(false);
+            setPasswordInput('');
+        };
+
+        const endEvent = () => {
+            setEventActive(false);
+            setSurpriseNumbers([]);
+            setShowAdmin(false);
+            setIsAuthenticated(false);
+            setPasswordInput('');
+        };
+
+        const handlePasswordSubmit = () => {
+            if (passwordInput === ADMIN_PASSWORD) {
+                setIsAuthenticated(true);
+                setShowPasswordError(false);
+                setPasswordInput('');
+            } else {
+                setShowPasswordError(true);
+                setTimeout(() => setShowPasswordError(false), 3000);
+            }
+        };
+
+        const handlePurchase = () => {
+            window.open(paymentLink, '_blank');
+            setTimeout(() => {
+                window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+            }, 2000);
+        };
+
+        if (!eventActive) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center p-4">
+                    <div className="text-center bg-white rounded-3xl shadow-2xl p-12 max-w-md">
+                        <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                            <i data-lucide="award" className="w-10 h-10 text-white"></i>
+                        </div>
+                        <h2 className="text-3xl font-bold text-gray-800 mb-4">Evento Finalizado</h2>
+                        <p className="text-gray-600 mb-8">Pronto iniciaremos un nuevo sorteo</p>
+                        <button onClick={() => setShowAdmin(!showAdmin)} className="text-gray-400 text-sm hover:text-gray-600">Admin</button>
+                        {showAdmin && !isAuthenticated && (
+                            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+                                <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">🔐 Acceso Administrativo</h3>
+                                    <input 
+                                        type="password" 
+                                        value={passwordInput} 
+                                        onChange={(e) => setPasswordInput(e.target.value)} 
+                                        onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()} 
+                                        placeholder="Ingresa la contraseña" 
+                                        className="w-full px-4 py-3 bg-gray-100 text-gray-800 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-300" 
+                                        autoFocus 
+                                    />
+                                    {showPasswordError && <p className="text-red-500 text-sm mb-4 text-center">❌ Contraseña incorrecta</p>}
+                                    <div className="flex gap-3">
+                                        <button 
+                                            onClick={() => { setShowAdmin(false); setPasswordInput(''); setShowPasswordError(false); }} 
+                                            className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button 
+                                            onClick={handlePasswordSubmit} 
+                                            className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-white rounded-lg hover:from-yellow-500 hover:to-amber-600 font-semibold"
+                                        >
+                                            Entrar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {showAdmin && isAuthenticated && (
+                            <button 
+                                onClick={startNewEvent} 
+                                className="mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 shadow-lg"
+                            >
+                                Iniciar Nuevo Evento
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="min-h-screen bg-white">
+                <button 
+                    onClick={() => setShowAdmin(!showAdmin)} 
+                    className="fixed top-4 right-4 text-xs text-gray-300 opacity-30 hover:opacity-100 z-40"
+                >
+                    •••
+                </button>
+
+                {showAdmin && !isAuthenticated && (
+                    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">🔐 Acceso Administrativo</h3>
+                            <input 
+                                type="password" 
+                                value={passwordInput} 
+                                onChange={(e) => setPasswordInput(e.target.value)} 
+                                onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()} 
+                                placeholder="Ingresa la contraseña" 
+                                className="w-full px-4 py-3 bg-gray-100 text-gray-800 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-300" 
+                                autoFocus 
+                            />
+                            {showPasswordError && <p className="text-red-500 text-sm mb-4 text-center">❌ Contraseña incorrecta</p>}
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => { setShowAdmin(false); setPasswordInput(''); setShowPasswordError(false); }} 
+                                    className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    onClick={handlePasswordSubmit} 
+                                    className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-white rounded-lg hover:from-yellow-500 hover:to-amber-600 font-semibold"
+                                >
+                                    Entrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showAdmin && isAuthenticated && (
+                    <div className="fixed top-16 right-4 bg-white border-2 border-gray-200 p-4 rounded-2xl shadow-2xl z-50">
+                        <p className="text-green-600 text-xs mb-3 text-center font-semibold">✓ Autenticado</p>
+                        <button 
+                            onClick={endEvent} 
+                            className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 text-sm w-full font-semibold"
+                        >
+                            Terminar Evento
+                        </button>
+                    </div>
+                )}
+
+                <div className="container mx-auto px-4 py-8 max-w-4xl">
+                    <div className="text-center mb-8">
+                        <div className="inline-block bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 text-white px-8 py-3 rounded-full font-bold text-sm mb-6 shadow-lg animate-pulse">
+                            🔥 EVENTO ONLINE EXCLUSIVO 🔥
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-700 bg-clip-text text-transparent mb-4">
+                            Harvey Sarmiento
+                        </h1>
+                        <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                            Resultados Garantizados desde tus primeros 10 días
+                        </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-300 rounded-3xl p-6 mb-8 shadow-xl">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-gray-800 font-bold flex items-center gap-2">
+                                <i data-lucide="trending-up" className="w-5 h-5 text-yellow-600"></i>
+                                Stickers Vendidos
+                            </span>
+                            <span className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">{progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden border-2 border-gray-300">
+                            <div 
+                                className="bg-gradient-to-r from-green-500 via-yellow-500 to-amber-500 h-full rounded-full transition-all duration-1000 flex items-center justify-end pr-2" 
+                                style={{ width: `${progress}%` }}
+                            >
+                                <i data-lucide="zap" className="w-4 h-4 text-white"></i>
+                            </div>
+                        </div>
+                        <p className="text-red-600 text-sm mt-3 font-bold text-center">
+                            ⚡ ¡Quedan pocos! No te quedes sin tu oportunidad
+                        </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-red-600 via-red-500 to-orange-500 rounded-3xl p-8 mb-8 shadow-2xl transform hover:scale-105 transition-all">
+                        <div className="text-center text-white">
+                            <i data-lucide="award" className="w-16 h-16 mx-auto mb-4"></i>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-3">🎊 GRAN PREMIO 🎊</h2>
+                            <div className="bg-white/20 rounded-2xl p-6 backdrop-blur-sm">
+                                <div className="flex items-center justify-center gap-3 mb-4">
+                                    <i data-lucide="users" className="w-8 h-8"></i>
+                                    <p className="text-2xl font-bold">2 Meses de Acompañamiento Personalizado</p>
+                                </div>
+                                <div className="flex items-center justify-center gap-3">
+                                    <i data-lucide="dollar-sign" className="w-8 h-8"></i>
+                                    <p className="text-3xl font-bold">+ $500,000 COP en Efectivo</p>
+                                </div>
+                            </div>
+                            <p className="mt-4 text-lg font-semibold">¡Uno de los stickers sorpresa será el ganador!</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-4 border-yellow-400 rounded-3xl p-8 mb-8 shadow-2xl">
+                        <div className="text-center mb-6">
+                            <p className="text-gray-700 text-lg mb-2 font-semibold">Adquiere tus</p>
+                            <p className="text-6xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent mb-2">10 Stickers</p>
+                            <p className="text-5xl font-bold text-gray-800">$12,000 COP</p>
+                        </div>
+                        
+                        <button 
+                            onClick={handlePurchase} 
+                            className="w-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 text-white text-2xl font-bold py-6 rounded-2xl hover:shadow-2xl transform hover:scale-105 transition-all shadow-lg mb-6"
+                        >
+                            🎁 COMPRAR AHORA
+                        </button>
+
+                        <div className="bg-white rounded-2xl p-6 border-2 border-yellow-300">
+                            <h3 className="text-center font-bold text-gray-800 mb-4 text-lg">📋 Proceso Automático:</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">1</div>
+                                    <p className="text-gray-700"><span className="font-bold">Realiza tu pago</span> haciendo clic en "Comprar Ahora"</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">2</div>
+                                    <p className="text-gray-700"><span className="font-bold">Envía tu comprobante</span> por WhatsApp automáticamente</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">3</div>
+                                    <p className="text-gray-700"><span className="font-bold text-green-600">¡Recibes tus stickers al instante!</span> Generación automática</p>
+                                </div>
+                            </div>
+                            <div className="mt-4 bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-400 rounded-xl p-3 flex items-center gap-3">
+                                <i data-lucide="send" className="w-6 h-6 text-green-600"></i>
+                                <p className="text-green-800 font-semibold text-sm">Los stickers se generan automáticamente al enviar tu comprobante</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-4 border-yellow-400 rounded-3xl p-8 shadow-2xl">
+                        <div className="text-center mb-6">
+                            <i data-lucide="gift" className="w-16 h-16 mx-auto mb-4 text-yellow-600"></i>
+                            <h2 className="text-4xl font-bold text-gray-800 mb-3">🎉 Stickers Sorpresa 🎉</h2>
+                            <p className="text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-2">
+                                ¡Uno de estos números ganará el GRAN PREMIO!
+                            </p>
+                            <p className="text-gray-700 font-semibold">2 Meses de Acompañamiento + $500,000 COP</p>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                            {surpriseNumbers.map((num) => (
+                                <div 
+                                    key={num} 
+                                    className="bg-gradient-to-br from-red-500 via-yellow-500 to-green-500 rounded-2xl p-6 text-center transform hover:scale-110 transition-all shadow-xl border-4 border-white"
+                                >
+                                    <p className="text-4xl font-bold text-white drop-shadow-lg">{num}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bg-white rounded-2xl p-4 border-2 border-yellow-300">
+                            <p className="text-center text-gray-800 font-bold">
+                                💫 Si te toca uno de estos números, ¡GANAS EL GRAN PREMIO!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-8 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl p-6 border-2 border-yellow-300">
+                        <p className="text-gray-700 font-semibold mb-2">📱 Proceso 100% Automático y Seguro</p>
+                        <p className="text-xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
+                            Harvey Sarmiento - Asesorías Profesionales
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<EventoOnline />);
+
+    lucide.createIcons();
+</script>
+
+
+</body>
+</html>
